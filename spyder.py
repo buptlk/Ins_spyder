@@ -18,8 +18,8 @@ class Ins_Crawler:
     def __init__(self):
         self.browser = webdriver.Chrome()
         self.followings = []
-        self.account = 'sanxin0624'
-        self.password = '00000OOOOO'
+        self.account = '********'
+        self.password = '********'
 #        self.link_db()
         
 #    def link_db(self):
