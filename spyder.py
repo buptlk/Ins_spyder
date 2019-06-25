@@ -9,7 +9,7 @@ from selenium import webdriver
 import requests
 from lxml import etree
 import json
-import pymysql
+#import pymysql
 import os
 from PIL import Image
 from io import BytesIO
@@ -18,14 +18,14 @@ class Ins_Crawler:
     def __init__(self):
         self.browser = webdriver.Chrome()
         self.followings = []
-        self.account = '********'
-        self.password = '********'
+        self.account = 'sanxin0624'
+        self.password = '00000OOOOO'
 #        self.link_db()
         
 #    def link_db(self):
 #        try:
-#            db = pymysql.Connect(host='', port=3306, user='root', 
-#                                 passwd='', db='ins', charset='utf8')
+#            db = pymysql.Connect(host='10.1.30.10/24', port=3306, user='root', 
+#                                 passwd='123', db='ins', charset='utf8')
 #            print("Database connected!")
 #            return db
 #        except Exception as e:
@@ -74,7 +74,6 @@ class Ins_Crawler:
             else:
                 # 如果目录存在则不创建，并提示目录已存在
                 print(path_name + ' 目录已存在')
-                
             #当前博主的所有帖子链接
             shortcode = []
             print("正在爬取博主链接：" + url)
@@ -83,13 +82,13 @@ class Ins_Crawler:
             nodes = self.browser.find_elements_by_class_name('v1Nh3.kIKUG._bz0w')
             for node in nodes:
                 shortcode.append(node.find_element_by_xpath("./a").get_attribute('href'))
-            index = 0
+            dr = 0    #dr记录每一个博主下面的子贴，从0开始编号，即子文件夹的名字
             for sc in shortcode:
                 #请求博主的每一个帖子的url
 #                url_now = url_index + 'p/' + sc
                 print("正在爬取的帖子:" + sc)
                 #每个帖子的保存路径
-                path_one = path_name + '\\' + str(index)
+                path_one = path_name + '\\' + str(dr)
                 if not os.path.exists(path_one):
                     # 如果不存在则创建目录
                     os.makedirs(path_one) 
@@ -97,7 +96,7 @@ class Ins_Crawler:
                 else:
                     # 如果目录存在则不创建，并提示目录已存在
                     print(path_one + ' 帖子子目录已存在')
-                index += 1
+                dr += 1    
                 response = requests.get(sc)
                 html = etree.HTML(response.content.decode())  
                 all_a_tags = html.xpath('//script[@type="text/javascript"]/text()')  
@@ -130,12 +129,12 @@ class Ins_Crawler:
                         
                         if not node["is_video"]:
                             self.download_image(node["pic_url"], path_one)
-                       else:
-                           self.download_video(node["video_url"], path_one)
+                        else:
+                            self.download_video(node["video_url"], path_one)
                         #其他内容写进content.txt
-                        f = open(path_one + '\\' + 'content.txt','w')
-                        f.writelines(node["title"])
-                        f.writelines(node["content"])
+                        f = open(path_one + '\\' + 'content.txt','w', encoding = 'utf-8')
+                        f.writelines(node["title"] + ' \r\n')
+                        f.writelines(node["content"] + ' \r\n')
                         f.writelines(node["username"])
                         f.close()
                         
@@ -154,18 +153,20 @@ class Ins_Crawler:
             image.save(file_path)
         except:
             dic = {'url': url, 'file_path': file_path}
-            print("下载失败:", dic)
+            print("图片下载失败:", dic)
         
     def download_video(self, url, file_path):
         try:
             res = requests.get(url, stream=True)
             # 写入收到的视频数据
+            file_name = self.get_time_as_filename() + '.mp4'
+            file_path += '\\' + file_name
             with open(file_path, 'ab') as file:
                 file.write(res.content)
                 file.flush()
         except Exception as e:
             dic = {'url': url, 'file_path': file_path}
-            print("下载失败:", dic)
+            print("视频下载失败:", dic)
                    
 if __name__ == '__main__':
     ins = Ins_Crawler()
