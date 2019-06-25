@@ -18,14 +18,14 @@ class Ins_Crawler:
     def __init__(self):
         self.browser = webdriver.Chrome()
         self.followings = []
-        self.account = 'sanxin0624'
-        self.password = '00000OOOOO'
+        self.account = '********'
+        self.password = '********'
 #        self.link_db()
         
 #    def link_db(self):
 #        try:
-#            db = pymysql.Connect(host='10.1.30.10/24', port=3306, user='root', 
-#                                 passwd='123', db='ins', charset='utf8')
+#            db = pymysql.Connect(host='', port=3306, user='root', 
+#                                 passwd='', db='ins', charset='utf8')
 #            print("Database connected!")
 #            return db
 #        except Exception as e:
