@@ -130,8 +130,8 @@ class Ins_Crawler:
                         
                         if not node["is_video"]:
                             self.download_image(node["pic_url"], path_one)
-#                        else:
-#                            self.download_video(node["video_url"], path_one)
+                       else:
+                           self.download_video(node["video_url"], path_one)
                         #其他内容写进content.txt
                         f = open(path_one + '\\' + 'content.txt','w')
                         f.writelines(node["title"])
