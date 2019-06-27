@@ -24,7 +24,7 @@ class Ins_Crawler:
         
 #    def link_db(self):
 #        try:
-#            db = pymysql.Connect(host='****', port=3306, user='root', 
+#            db = pymysql.Connect(host='10.1.30.10/24', port=3306, user='root', 
 #                                 passwd='123', db='ins', charset='utf8')
 #            print("Database connected!")
 #            return db
@@ -149,9 +149,14 @@ class Ins_Crawler:
                             self.download_video(node["video_url"], path_one)
                         #其他内容写进content.txt
                         f = open(path_one + '\\' + 'content.txt','w', encoding = 'utf-8')
-                        f.writelines(node["title"] + ' \r\n')
-                        f.writelines(node["content"] + ' \r\n')
-                        f.writelines(node["username"])
+                        f.writelines("username:" + node["username"])
+                        f.writelines("title:" + node["title"] + ' \r\n')
+                        f.writelines("content:" + node["content"] + ' \r\n')
+                        f.writelines("is_video:" + str(node["is_video"]) + "\r\n")
+                        if(node["is_video"]):
+                            f.writelines("video_url" + node["video_url"] + "\r\n")
+                        else:
+                            f.writelines("pic_url" + node["pic_url"] + "\r\n")
                         f.close()
         self.followings = self.followings[size:]
         
