@@ -18,8 +18,8 @@ class Ins_Crawler:
     def __init__(self):
         self.browser = webdriver.Chrome()
         self.followings = []
-        self.account = '********'
-        self.password = '********'
+        self.account = 'sanxin0624'
+        self.password = '00000OOOOO'
 #        self.link_db()
         
 #    def link_db(self):
@@ -61,12 +61,28 @@ class Ins_Crawler:
             self.followings.append(item.get_attribute('title'))
             print("item:" + item.get_attribute('title'))
         
+    def get_now_followings(self, url):
+        #url 为博主首页
+        #函数功能：获取当前博主的关注用户，并加入self.followings
+        self.browser.get(url)
+        time.sleep(5)
+        self.browser.find_elements_by_class_name('g47SY')[2].click()
+        time.sleep(5)
+        nodes = self.browser.find_elements_by_class_name('FPmhX')
+        print("关注人数：", str(len(nodes)))
+        for i in range(min(len(nodes), 2)):
+            self.followings.append(nodes[i].get_attribute('title'))
+            
     def spyder(self):
         url_index = 'https://www.instagram.com/'
         path_base = 'D:\\instagram\\data\\'
-        for item in self.followings:
+        size = len(self.followings)
+        for i in range(size):
+            item = self.followings[i]
             url = url_index + item + '/'
             path_name = path_base + item
+            #获取当前博主的关注用户，最多2个，进行层序爬取
+            self.get_now_followings(url)
             if not os.path.exists(path_name):
                 # 如果不存在则创建目录
                 os.makedirs(path_name) 
@@ -77,7 +93,7 @@ class Ins_Crawler:
             #当前博主的所有帖子链接
             shortcode = []
             print("正在爬取博主链接：" + url)
-            self.browser.get(url)
+            self.browser.back()
             time.sleep(5)
             nodes = self.browser.find_elements_by_class_name('v1Nh3.kIKUG._bz0w')
             for node in nodes:
@@ -137,7 +153,8 @@ class Ins_Crawler:
                         f.writelines(node["content"] + ' \r\n')
                         f.writelines(node["username"])
                         f.close()
-                        
+        self.followings = self.followings[size:]
+        
     def get_time_as_filename(self):
         now_time = time.time()
         now_time_Array = time.localtime(now_time)
@@ -169,7 +186,16 @@ class Ins_Crawler:
             print("视频下载失败:", dic)
                    
 if __name__ == '__main__':
+    while True:
+        s = input("Please input the number of degree:")
+        if s.isdigit():
+            break
+        else:
+            print("Error! Please input an Integer!")
     ins = Ins_Crawler()
     ins.get_page()
-    ins.spyder()
+    for i in range(int(s)):
+        if(len(ins.followings) > 0):
+            ins.spyder()
+    ins.browser.close()
     print("Done!")
